@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排行榜</title>
+</head>
+<style>
+    /* 全局初始化 */
+* {
+    margin: 0;
+    padding: 0;
+    /* 统一盒子模型：宽高包含边框、内边距 */
+    box-sizing: border-box;
+}
+
+/* 取消列表默认圆点 */
+ul, ol {
+    list-style: none;
+}
+
+/* 取消超链接下划线、统一颜色 */
+a {
+    text-decoration: none;
+    color: #333;
+}
+
+/* 图片默认自适应、取消底部小白边 */
+img {
+    display: block;
+    border: none;
+}
+
+/* 统一全局字体、行高、字体颜色 */
+body {
+    font-family: "Microsoft Yahei", sans-serif;
+    color: #333;
+    line-height: 1.5;
+    background-color: #fff;
+}
+
+/* 清除浮动（防止父元素高度塌陷） */
+.clearfix::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+
+.header{
+    width: 100%;
+    height: 90px;
+    background-color: #8fa98e;
+    display: flex;
+    justify-content: center;
+    
+}
+.header div{
+    margin-top: 18px;
+    margin-right: 20px;
+}
+.header_icon img{
+    width: 50px;
+   
+}
+.header_icon_text{
+    color: #fff;
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: -5px;
+    
+}
+.header_search input{
+    
+    margin-top: 10px;
+    height: 30px;
+    width: 270px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    background: url(./images/1.webp) no-repeat 10px center;
+    background-size: 16px;
+    background-color: #b2aeae91;
+    padding-left: 30px;
+}
+.header_li ul{
+    display: flex;
+    margin-left: 200px;
+    
+    
+}
+.header_li ul li{
+    margin-top: 13px;
+    margin-left: 20px;
+    
+    
+}
+.header_li ul li.active a{
+    background-color: #6b8e6a;
+    padding: 6px 12px;
+    border-radius: 20px;
+    color: white !important;
+    font-weight: bold;
+}
+.header_li ul li button{
+    width: 85px;
+    height: 35px;
+    background-color: aliceblue;
+    border: none;
+    border-radius: 20px;
+    margin-top: -5px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #6b8e6a;
+   
+    
+    
+}
+
+/* 主体容器：左右布局 */
+.rank-container {
+  display: flex;
+  max-width: 1100px;
+  margin: 30px auto;
+  gap: 30px;
+}
+
+/* 左侧侧边栏 */
+.rank-sidebar {
+  width: 200px; /* 固定宽度 */
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.sidebar-group {
+  padding: 15px 0; /* 左右padding设为0，让列表项撑满 */
+}
+
+.sidebar-group h3 {
+  font-size: 16px;
+  margin: 0 15px 15px ; /* 标题只加左右边距 */
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.rank-sidebar ul {
+  list-style: none;
+}
+
+.rank-sidebar li {
+  padding: 10px 15px; /* 上下内边距+左右内边距 */
+  margin: 0; /* 清除外边距 */
+  cursor: pointer;
+  width: 100%; /* 关键：撑满父容器宽度 */
+  box-sizing: border-box;
+}
+.rank-sidebar li:hover{
+  background-color: #27ae60;
+  color: #fff;
+}
+
+/* 关键：让绿色背景撑满 */
+.rank-sidebar li.active {
+  background-color: #27ae60;
+  color: #fff;
+  border-radius: 0; /* 去掉圆角 */
+}
+
+/* 右侧内容区 */
+.rank-content {
+  flex: 1;
+}
+.rank-content h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+/* 表头 */
+.rank-header {
+  display: flex;
+  background-color: #f5f5f5;
+  padding: 12px 15px;
+  border-radius: 4px 4px 0 0;
+}
+.col-song {
+  width: 50%;
+}
+.col-singer {
+  width: 30%;
+}
+.col-time {
+  width: 20%;
+  text-align: right;
+}
+
+/* 歌曲列表 */
+.song-list {
+  border: 1px solid #eee;
+  border-top: none;
+}
+.song-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+.rank-num {
+  width: 30px;
+  font-size: 24px;
+  color: black;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.song-cover {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  object-fit: cover;
+  margin-right: 15px;
+}
+.song-name {
+  width: calc(50% - 75px); /* 减去封面和序号的宽度 */
+}
+.singer-name {
+  width: 30%;
+  color: #666;
+}
+.song-time {
+  width: 20%;
+  text-align: right;
+  color: #666;
+}
+
+/* 页脚样式 */
+.footer {
+  width: 100%;
+  background-color: #2d3436; /* 深色背景，和绿色形成对比 */
+  color: #b0b0b0;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* 顶部图标区 */
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+.link-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.link-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #6b8e6a; /* 和导航栏高亮色一致 */
+  border-radius: 8px;
+  opacity: 0.7;
+}
+.link-item span {
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* 文字链接区 */
+.footer-info .info-links {
+  margin-bottom: 15px;
+}
+.footer-info .info-links a {
+  color: #999;
+  font-size: 14px;
+  text-decoration: none;
+}
+.footer-info .info-links a:hover {
+  color: #6b8e6a; /* hover变绿色，和导航栏呼应 */
+}
+.footer-info .info-text {
+  font-size: 13px;
+  margin: 8px 0;
+  color: #888;
+}
+.footer-info .copyright {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #666;
+}
+</style>
+<body>
+    <div class="header">
+        <div class="header_icon">
+            <img src="./images/icon-xiaomi.png" alt="">
+            
+        </div>
+        <div class="header_icon_text">
+            <span>xiaomi音乐</span>
+        </div>
+        <div class="header_search">
+            <input type="text">
+        </div>
+        <div class="header_li">
+            <ul>
+                <li><a href="./index.html">首页</a></li>
+                <li><a href="./myMusic.html">我的音乐</a></li>
+                <li><a href="./singers.html">歌手</a></li>
+                <li class="active"><a href="./rank.html">排行榜</a></li>
+                <li><a href="./vip.html">VIP会员</a></li>
+                <li>|</li>
+                <li><button onclick="login()">登录</button></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="rank-container">
+  <!-- 左侧侧边栏 -->
+        <div class="rank-sidebar">
+            <div class="sidebar-group">
+            <h3>流行榜</h3>
+            <ul>
+                <li class="active">流行指数榜</li>
+                <li>热歌榜</li>
+                <li>新歌榜</li>
+                <li>飙升榜</li>
+                <li>听歌识曲榜</li>
+                <li>MV榜</li>
+            </ul>
+            </div>
+            <div class="sidebar-group">
+            <h3>地区榜</h3>
+            <ul>
+                <li>内地榜</li>
+                <li>香港地区榜</li>
+                <li>台湾地区榜</li>
+                <li>欧美榜</li>
+                <li>韩国榜</li>
+                <li>日本榜</li>
+            </ul>
+            </div>
+            <div class="sidebar-group">
+            <h3>特色榜</h3>
+            <ul>
+                <li>抖音排行榜</li>
+                <li>网络歌曲榜</li>
+                <li>电音榜</li>
+                <li>国风热歌榜</li>
+                <li>腾讯音乐人原创榜</li>
+                <li>说唱榜</li>
+            </ul>
+            </div>
+            <div class="sidebar-group">
+            <h3>全球榜</h3>
+            <ul>
+                <li>美国公告牌榜</li>
+                <li>美国iTunes榜</li>
+                <li>韩国Melon榜</li>
+                <li>英国UK榜</li>
+                <li>日本公信榜</li>
+                <li>香港商台榜</li>
+                <li>YouTube音乐排行榜</li>
+            </ul>
+            </div>
+        </div>
+
+        <!-- 右侧排行榜内容 -->
+        <div class="rank-content">
+            <h2>流行指数榜</h2>
+            <!-- 表头 -->
+            <div class="rank-header">
+            <div class="col-song">歌曲</div>
+            <div class="col-singer">歌手</div>
+            <div class="col-time">时长</div>
+            </div>
+            <!-- 歌曲列表 -->
+            <div class="song-list">
+            <div class="song-item">
+                <div class="rank-num" style="color: red;">1</div>
+                <img src="./images/maque.jpg" alt="麻雀" class="song-cover">
+                <div class="song-name">麻雀</div>
+                <div class="singer-name">李荣浩</div>
+                <div class="song-time">04:12</div>
+            </div>
+            <div class="song-item">
+                <div class="rank-num" style="color: orange;">2</div>
+                <img src="./images/liulang.jpg" alt="陪你去流浪" class="song-cover">
+                <div class="song-name">陪你去流浪</div>
+                <div class="singer-name">薛之谦</div>
+                <div class="song-time">04:34</div>
+            </div>
+            <div class="song-item">
+                <div class="rank-num" style="color: purple;">3</div>
+                <img src="./images/xingxiu.webp" alt="星宿" class="song-cover">
+                <div class="song-name">星宿</div>
+                <div class="singer-name">徐均朔</div>
+                <div class="song-time">03:37</div>
+            </div>
+            <div class="song-item">
+                <div class="rank-num">4</div>
+                <img src="./images/ouruola.webp" alt="欧若拉" class="song-cover">
+                <div class="song-name">欧若拉 (完整版)</div>
+                <div class="singer-name">胜屿</div>
+                <div class="song-time">03:43</div>
+            </div>
+            <div class="song-item">
+                <div class="rank-num">5</div>
+                <img src="./images/lianren.webp" alt="恋人" class="song-cover">
+                <div class="song-name">恋人</div>
+                <div class="singer-name">李荣浩</div>
+                <div class="song-time">04:35</div>
+            </div>
+            <div class="song-item">
+                <div class="rank-num">6</div>
+                <img src="./images/xiaoban.jpg" alt="小半" class="song-cover">
+                <div class="song-name">小半</div>
+                <div class="singer-name">陈粒</div>
+                <div class="song-time">04:57</div>
+            </div>
+            <div class="song-item">
+                <div class="rank-num">7</div>
+                <img src="./images/yuai.jpg" alt="雨爱" class="song-cover">
+                <div class="song-name">雨爱</div>
+                <div class="singer-name">杨丞琳</div>
+                <div class="song-time">04:20</div>
+            </div>
+            <div class="song-item">
+                <div class="rank-num">8</div>
+                <img src="./images/qingtian.jpg" alt="晴天" class="song-cover">
+                <div class="song-name">晴天</div>
+                <div class="singer-name">周杰伦</div>
+                <div class="song-time">03:56</div>
+            </div>
+            <div class="song-item">
+                <div class="rank-num">9</div>
+                <img src="./images/jide.jpg" alt="记得" class="song-cover">
+                <div class="song-name">记得</div>
+                <div class="singer-name">林俊杰</div>
+                <div class="song-time">03:36</div>
+            </div>
+            <div class="song-item">
+                <div class="rank-num">10</div>
+                <img src="./images/qing.jpg" alt="晴" class="song-cover">
+                <div class="song-name">晴</div>
+                <div class="singer-name">汪苏泷</div>
+                <div class="song-time">03:29</div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="height: 200px;"></div>
+    <footer class="footer">
+  <!-- 底部合作伙伴图标区 -->
+        <div class="footer-links">
+            <div class="link-item">
+                <i class="icon">🎵</i>
+                <span>小米音乐集团</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">🎤</i>
+                <span>小米音乐人</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">✍️</i>
+                <span>音乐创作平台</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">🎧</i>
+                <span>听歌识曲</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">⭐</i>
+                <span>原创音乐</span>
+            </div>
+        </div>
+
+        <!-- 中间文字链接区 -->
+        <div class="footer-info">
+            <p class="info-links">
+            <a href="#">关于我们</a> |
+            <a href="#">商务合作</a> |
+            <a href="#">广告服务</a> |
+            <a href="#">投诉指引</a> |
+            <a href="#">隐私政策</a> |
+            <a href="#">用户服务协议</a> |
+            <a href="#">招聘信息</a> |
+            <a href="#">客服中心</a>
+            </p>
+            <p class="info-text">
+            粤网文(2025)1226-111号 | 网络视听许可证 1910564号 | 增值电信业务 粤B2-20060339 | 粤ICP备09017694号
+            </p>
+            <p class="info-text">
+            粤公网安备 44030002000001号 | 互联网不良信息举报邮箱：music@xiaomi.com | 客服电话：400-123-4567
+            </p>
+            <p class="copyright">
+            Copyright © 2024-2026 Xiaomi Music. All Rights Reserved.
+            </p>
+        </div>
+    </footer>
+</body>
+<script>
+    // ========== 登录 ==========
+    function login(){
+        window.location.href = "./login.html"
+    }
+</script>
+</html>

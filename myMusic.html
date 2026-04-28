@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的音乐</title>
+</head>
+<style>
+    /* 全局初始化 */
+* {
+    margin: 0;
+    padding: 0;
+    /* 统一盒子模型：宽高包含边框、内边距 */
+    box-sizing: border-box;
+}
+
+/* 取消列表默认圆点 */
+ul, ol {
+    list-style: none;
+}
+
+/* 取消超链接下划线、统一颜色 */
+a {
+    text-decoration: none;
+    color: #333;
+}
+
+/* 图片默认自适应、取消底部小白边 */
+img {
+    display: block;
+    border: none;
+}
+
+/* 统一全局字体、行高、字体颜色 */
+body {
+    font-family: "Microsoft Yahei", sans-serif;
+    color: #333;
+    line-height: 1.5;
+    background-color: #fff;
+}
+
+/* 清除浮动（防止父元素高度塌陷） */
+.clearfix::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.header{
+    width: 100%;
+    height: 90px;
+    background-color: #8fa98e;
+    display: flex;
+    justify-content: center;
+    
+}
+.header div{
+    margin-top: 18px;
+    margin-right: 20px;
+}
+.header_icon img{
+    width: 50px;
+   
+}
+.header_icon_text{
+    color: #fff;
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: -5px;
+    
+}
+.header_search input{
+    
+    margin-top: 10px;
+    height: 30px;
+    width: 270px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    background: url(./images/1.webp) no-repeat 10px center;
+    background-size: 16px;
+    background-color: #b2aeae91;
+    padding-left: 30px;
+}
+.header_li ul{
+    display: flex;
+    margin-left: 200px;
+    
+    
+}
+.header_li ul li{
+    margin-top: 13px;
+    margin-left: 20px;
+    
+    
+}
+.header_li ul li.active a{
+    background-color: #6b8e6a;
+    padding: 6px 12px;
+    border-radius: 20px;
+    color: white !important;
+    font-weight: bold;
+}
+.header_li ul li button{
+    width: 85px;
+    height: 35px;
+    background-color: aliceblue;
+    border: none;
+    border-radius: 20px;
+    margin-top: -5px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #6b8e6a;
+   
+    
+    
+}
+
+/* 横幅容器 */
+.profile-banner {
+  position: relative;
+  width: 100%;
+  height: 450px; /* 背景图高度，可根据图片调整 */
+  overflow: hidden;
+}
+.banner-bg .bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 居中的个人信息 */
+.profile-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+}
+
+/* 圆形头像 */
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 15px;
+  border: 3px solid rgba(255,255,255,0.5);
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit:cover;
+}
+
+.username {
+  font-size: 24px;
+  margin: 0 0 10px;
+}
+.stats {
+  font-size: 14px;
+  margin: 0 0 30px;
+  opacity: 0.9;
+}
+
+/* 标签栏 */
+.tab-bar {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+}
+.tab {
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.tab.active {
+  color: #ff6600;
+  opacity: 1;
+}
+.song-list-section {
+  padding: 30px 50px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+/* 表头 */
+.list-header {
+  display: flex;
+  background: #f5f5f5;
+  padding: 12px 15px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+/* 歌曲项 */
+.song-item {
+  display: flex;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  align-items: center;
+}
+/* 每一列的宽度分配 */
+.col {
+  flex: 1;
+  font-size: 14px;
+  color: #666;
+}
+/* 表头文字样式 */
+.list-header .col {
+  font-weight: bold;
+  color: #999;
+}
+.container{
+    height: 1000px;
+}
+
+/* 页脚样式 */
+.footer {
+  width: 100%;
+  background-color: #2d3436; /* 深色背景，和绿色形成对比 */
+  color: #b0b0b0;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* 顶部图标区 */
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+.link-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.link-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #6b8e6a; /* 和导航栏高亮色一致 */
+  border-radius: 8px;
+  opacity: 0.7;
+}
+.link-item span {
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* 文字链接区 */
+.footer-info .info-links {
+  margin-bottom: 15px;
+}
+.footer-info .info-links a {
+  color: #999;
+  font-size: 14px;
+  text-decoration: none;
+}
+.footer-info .info-links a:hover {
+  color: #6b8e6a; /* hover变绿色，和导航栏呼应 */
+}
+.footer-info .info-text {
+  font-size: 13px;
+  margin: 8px 0;
+  color: #888;
+}
+.footer-info .copyright {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #666;
+}
+
+/* 页面加载动画 */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: all 0.5s;
+}
+.loading.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+.loading-circle {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #eee;
+  border-top: 4px solid #6b8e6a;
+  border-radius: 50%;
+  animation: rotate 1s linear infinite;
+}
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/* 加载文字 */
+.loading-text {
+  margin-left: 12px;
+  font-size: 16px;
+  color: #6b8e6a;
+}
+
+
+</style>
+<body>
+    <!-- 页面加载 -->
+    <div class="loading" id="loading">
+        <div class="loading-circle"></div>
+        <div class="loading-text">页面加载中...</div>
+    </div>
+
+    <div class="header">
+        <div class="header_icon">
+            <img src="./images/icon-xiaomi.png" alt="">
+            
+        </div>
+        <div class="header_icon_text">
+            <span>xiaomi音乐</span>
+        </div>
+        <div class="header_search">
+            <input type="text">
+        </div>
+        <div class="header_li">
+            <ul>
+                <li><a href="./index.html">首页</a></li>
+                <li class="active"><a href="./myMusic.html">我的音乐</a></li>
+                <li><a href="./singers.html">歌手</a></li>
+                <li><a href="./rank.html">排行榜</a></li>
+                <li><a href="./vip.html">VIP会员</a></li>
+                <li>|</li>
+                <li><button onclick="login()">登录</button></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+                <!-- 个人信息横幅 -->
+        <section class="profile-banner">
+        <div class="banner-bg">
+            <!-- 背景图 -->
+            <img src="./images/cloud.png" alt="背景" class="bg-img">
+        </div>
+
+        <div class="profile-info">
+            <!-- 圆形头像 -->
+            <div class="avatar">
+            <img src="./images/cat.webp" alt="头像">
+            </div>
+            <!-- 昵称和数据 -->
+            <h2 class="username">abc</h2>
+            <p class="stats">关注 0 | 粉丝 0</p>
+
+            <!-- 下方标签栏 -->
+            <div class="tab-bar">
+            <span class="tab active">我的喜欢</span>
+            <span class="tab">我创建的歌单</span>
+            <span class="tab">关注</span>
+            <span class="tab">粉丝</span>
+            </div>
+        </div>
+        </section>
+
+        <section class="song-list-section">
+        <!-- 表头 -->
+        <div class="list-header">
+            <div class="col">歌曲</div>
+            <div class="col">歌手</div>
+            <div class="col">专辑</div>
+            <div class="col">时长</div>
+        </div>
+
+        <!-- 歌曲项 -->
+        <div class="song-item">
+            <div class="col">麻雀</div>
+            <div class="col">李荣浩</div>
+            <div class="col">麻雀</div>
+            <div class="col">04:12</div>
+        </div>
+        <div class="song-item">
+            <div class="col">陪你去流浪</div>
+            <div class="col">薛之谦</div>
+            <div class="col">陪你去流浪</div>
+            <div class="col">04:34</div>
+        </div>
+        <div class="song-item">
+            <div class="col">星宿</div>
+            <div class="col">徐均朔</div>
+            <div class="col">星宿</div>
+            <div class="col">03:37</div>
+        </div>
+        </section>
+    </div>
+
+    <div style="height: 200px;"></div>
+    <footer class="footer">
+  <!-- 底部合作伙伴图标区 -->
+        <div class="footer-links">
+            <div class="link-item">
+                <i class="icon">🎵</i>
+                <span>小米音乐集团</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">🎤</i>
+                <span>小米音乐人</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">✍️</i>
+                <span>音乐创作平台</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">🎧</i>
+                <span>听歌识曲</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">⭐</i>
+                <span>原创音乐</span>
+            </div>
+        </div>
+
+        <!-- 中间文字链接区 -->
+        <div class="footer-info">
+            <p class="info-links">
+            <a href="#">关于我们</a> |
+            <a href="#">商务合作</a> |
+            <a href="#">广告服务</a> |
+            <a href="#">投诉指引</a> |
+            <a href="#">隐私政策</a> |
+            <a href="#">用户服务协议</a> |
+            <a href="#">招聘信息</a> |
+            <a href="#">客服中心</a>
+            </p>
+            <p class="info-text">
+            粤网文(2025)1226-111号 | 网络视听许可证 1910564号 | 增值电信业务 粤B2-20060339 | 粤ICP备09017694号
+            </p>
+            <p class="info-text">
+            粤公网安备 44030002000001号 | 互联网不良信息举报邮箱：music@xiaomi.com | 客服电话：400-123-4567
+            </p>
+            <p class="copyright">
+            Copyright © 2024-2026 Xiaomi Music. All Rights Reserved.
+            </p>
+        </div>
+    </footer>
+    
+</body>
+<script>
+    // 获取所有导航选项
+    const navItems = document.querySelectorAll('.tab-bar .tab');
+
+    // 给每个选项绑定点击事件
+    navItems.forEach(item => {
+    item.addEventListener('click', function() {
+        // 1. 先把所有选项的 active 类去掉
+        navItems.forEach(i => i.classList.remove('active'));
+        // 2. 给当前点击的选项加上 active 类
+        this.classList.add('active');
+    });
+    });
+
+    // 页面加载完成后隐藏 loading
+    window.addEventListener('load', function () {
+    setTimeout(() => {
+        document.getElementById('loading').classList.add('hide');
+    }, 800);
+    });
+
+    // ========== 登录 ==========
+    function login(){
+        window.location.href = "./login.html"
+    }
+
+    
+</script>
+</html>

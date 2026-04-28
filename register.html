@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册</title>
+</head>
+<style>
+  body {
+    background-color: rgb(238, 237, 237);
+  }
+
+  .login1 {
+    display: flex;
+    justify-content: center;
+  }
+
+  .login2 {
+    width: 350px;
+    height: 450px;
+    background-color: rgb(245, 248, 248);
+    margin-top: 150px;
+    box-shadow: 5px 5px 5px 5px rgb(235, 232, 232);
+
+
+  }
+
+  .login3 {
+    padding: 50px;
+  }
+
+  .login4 {
+    margin-left: 50px;
+    margin-top: -20px;
+    position: relative;
+  }
+
+  .input {
+    margin: 5px;
+    width: 230px;
+    height: 30px;
+    border: none;
+    background-color: rgb(235, 235, 235);
+    outline: none;
+    padding: 5px;
+
+
+  }
+  .input:focus{
+    border: 1px solid #ff7d00;
+    border-radius: 3px;
+    
+    box-shadow: 0 0 0 2px rgba(255, 125, 0, 0.2);
+  }
+
+  .button {
+    border: none;
+    background-color: orange;
+    width: 245px;
+    height: 40px;
+    border-radius: 5px;
+    margin-top: 5px;
+  }
+
+  .login5 {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+  }
+  .loginf{
+    border-bottom: 3px solid orange;
+    font-weight: bold;
+  }
+  a{
+    text-decoration-line: none;
+    color: gray;
+  }
+   .eye-btn{
+    width: 25px;
+    position: absolute;
+    top: 63px;
+    left: 210px;
+  }
+  
+
+</style>
+
+<body>
+  <div class="login1">
+    <div class="login2">
+      <div class="login3">
+        <a href="./login.html"><span>登录</span></a>&emsp;
+        <span class="loginf">注册</span>
+        <a href="./index.html"><span style="margin-left: 100px; font-size: 14px;">返回主页</span></a>
+      </div>
+      <div class="login4">
+        <input type="text" placeholder="请输入你的手机号" class="input" id="username">
+        <input type="password" placeholder="设置你的密码" class="input" id="pwd">
+        <img src="./images/eye_undisplay.png" alt="" class="eye-btn" id="eyeBtn">
+        <br>
+        <input type="text" placeholder="请输入验证码" class="input" id="codeInput" style="width: 120px; display: inline-block;">
+        <canvas id="verifyCanvas" width="100" height="36" style="cursor: pointer; vertical-align: middle; margin-left: 5px;"></canvas>
+        <br>
+        <span class="msg"></span>
+        <br>
+        <input type="checkbox" style="background-color: rgb(153, 151, 151);"><span
+          style="font-size: 12px; color: gray;">已阅读并同意<a href="#" style="text-decoration-line:underline; color: rgb(38, 166, 212);">小米音乐使用协议</a></span>
+        <br>
+
+        <button class="button" type="button" onclick="register()">立即注册</button>
+        
+      
+
+    </div>
+  </div>
+</body>
+<script>
+  const pwdInput = document.getElementById('pwd');
+  const eyeBtn = document.getElementById('eyeBtn');
+  const verifyCanvas = document.getElementById('verifyCanvas');
+  const codeInput = document.getElementById('codeInput');
+  const agreeCheck = document.querySelector('input[type="checkbox"]');
+  let currentCode = ''; // 保存当前正确验证码
+
+  // 点击切换显示/隐藏
+  eyeBtn.onclick = function () {
+    // 切换 type
+    if (pwdInput.type === 'password') {
+      pwdInput.type = 'text';
+      eyeBtn.src = './images/eye_display.png'; // 显示状态图标
+    } else {
+      pwdInput.type = 'password';
+      eyeBtn.src = './images/eye_undisplay.png'; // 隐藏状态图标
+    }
+  };
+
+  function register(){
+    let username = document.getElementById("username").value.trim();
+    let password = document.getElementById("pwd").value.trim();
+    let inputCode = codeInput.value.trim();
+    let msg = ''
+
+    if(username === "" || password === ""){
+      msg = `<span style="color: red; font-size: 13px;">请输入手机号或密码</span>`
+      document.querySelector(".msg").innerHTML = msg
+    }else if(username.length !== 11 ){
+      msg = `<span style="color: red; font-size: 13px;">请输入11位手机号</span>`
+      document.querySelector(".msg").innerHTML = msg
+    }else if (inputCode === "") {
+      msg = `<span style="color: red; font-size: 13px;">请输入验证码</span>`;
+      document.querySelector(".msg").innerHTML = msg
+    } else if (inputCode !== currentCode) {
+      msg = `<span style="color: red; font-size: 13px;">验证码错误</span>`;
+      document.querySelector(".msg").innerHTML = msg
+      createCode(); // 错误就刷新验证码
+    }else if (!agreeCheck.checked) {
+      msg = `<span style="color: red; font-size: 13px;">请勾选小米音乐使用协议</span>`;
+      document.querySelector(".msg").innerHTML = msg
+    }
+    else{
+      msg = `<span style="color: green; font-size: 13px;">注册成功</span>`
+      document.querySelector(".msg").innerHTML = msg
+      setTimeout(function () {
+                window.location.href = "https://www.baidu.com/";
+            }, 1000);
+      
+    }
+    
+  }
+
+  function createCode() {
+    const codeArr = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let code = '';
+    for (let i = 0; i < 4; i++) {
+      const index = Math.floor(Math.random() * codeArr.length);
+      code += codeArr[index];
+    }
+    currentCode = code;
+    drawCode(code); // 画到画布上
+  }
+
+  // 把验证码画到canvas
+  function drawCode(code) {
+    const ctx = verifyCanvas.getContext('2d');
+    ctx.clearRect(0, 0, verifyCanvas.width, verifyCanvas.height);
+    
+    // 背景
+    ctx.fillStyle = '#f5f8f8';
+    ctx.fillRect(0, 0, verifyCanvas.width, verifyCanvas.height);
+    
+    // 文字
+    ctx.font = '22px Arial';
+    ctx.fillStyle = '#ff7d00';
+    ctx.textAlign = 'center';
+    ctx.fillText(code, verifyCanvas.width / 2, 26);
+  }
+
+  // 点击验证码刷新
+  verifyCanvas.onclick = createCode;
+
+  // 页面加载就生成验证码
+  window.onload = createCode;
+
+
+</script>
+
+</html>

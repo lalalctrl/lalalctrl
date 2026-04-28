@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录</title>
+</head>
+<style>
+  body {
+    background-color: rgb(238, 237, 237);
+  }
+
+  .login1 {
+    display: flex;
+    justify-content: center;
+  }
+
+  .login2 {
+    width: 350px;
+    height: 450px;
+    background-color: rgb(245, 248, 248);
+    margin-top: 150px;
+    box-shadow: 5px 5px 5px 5px rgb(235, 232, 232);
+
+
+  }
+
+  .login3 {
+    padding: 50px;
+  }
+
+  .login4 {
+    margin-left: 50px;
+    margin-top: -20px;
+    position: relative;
+  }
+
+  .input {
+    margin: 5px;
+    width: 230px;
+    height: 30px;
+    border: none;
+    background-color: rgb(235, 235, 235);
+    outline: none;
+    padding: 5px;
+
+
+  }
+  .input:focus{
+    border: 1px solid #ff7d00;
+    border-radius: 3px;
+    
+    box-shadow: 0 0 0 2px rgba(255, 125, 0, 0.2);
+  }
+
+  .button {
+    border: none;
+    background-color: orange;
+    width: 245px;
+    height: 40px;
+    border-radius: 5px;
+    margin-top: 5px;
+  }
+
+  .login5 {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+  }
+  .loginf{
+    border-bottom: 3px solid orange;
+    font-weight: bold;
+  }
+  a{
+    text-decoration-line: none;
+    color: gray;
+  }
+  .iconparent{
+    display: flex;
+    justify-content: center;
+  }
+  
+  .icon img{
+    width: 30px;
+    padding: 10px;
+  }
+
+  .eye-btn{
+    width: 25px;
+    position: absolute;
+    top: 63px;
+    left: 210px;
+  }
+</style>
+
+<body>
+  <div class="login1">
+    <div class="login2">
+      <div class="login3">
+        <a href="./login.html"></a><span class="loginf">登录</span></a>&emsp;
+        <a href="./register.html"><span>注册</span></a>
+        <a href="./index.html"><span style="margin-left: 100px; font-size: 14px;">返回主页</span></a>
+      </div>
+      <div class="login4">
+        <input type="text" placeholder="邮箱/手机号/小米ID" class="input" id="username">
+        <input type="password" placeholder="密码" class="input" id="pwd">
+        <img src="./images/eye_undisplay.png" alt="" class="eye-btn" id="eyeBtn">
+        <br>
+        <span class="msg"></span>
+        <br>
+        <input type="checkbox" style="background-color: rgb(153, 151, 151);"><span
+          style="font-size: 12px; color: gray;">已阅读并同意<a href="#" style="text-decoration-line:underline; color: rgb(38, 166, 212);">小米音乐使用协议</a></span>
+        <br>
+
+        <button class="button" type="button" onclick="login()">登录</button>
+        <br>
+        <span style="color: orange; font-size: 13px;">忘记密码？</span>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;
+        <span style="color: orange; font-size: 13px;">手机号登录</span>
+      </div>
+      <div class="login5">
+        <span style="color: gray; font-size: 13px;">其它方式登录</span>
+      </div>
+      <div class="iconparent">
+        <div class="icon">
+            <img src="./images/pay.png" alt="">
+            <img src="./images/weixin.png" alt="">
+            <img src="./images/QQ.png" alt="">
+            <img src="./images/weibo.png" alt="">
+        </div>
+      </div>
+      
+
+    </div>
+  </div>
+</body>
+<script>
+  
+  const pwdInput = document.getElementById('pwd');
+  const eyeBtn = document.getElementById('eyeBtn');
+  const agreeCheck = document.querySelector('input[type="checkbox"]');
+
+  // 点击切换显示/隐藏
+  eyeBtn.onclick = function () {
+    // 切换 type
+    if (pwdInput.type === 'password') {
+      pwdInput.type = 'text';
+      eyeBtn.src = './images/eye_display.png'; // 显示状态图标
+    } else {
+      pwdInput.type = 'password';
+      eyeBtn.src = './images/eye_undisplay.png'; // 隐藏状态图标
+    }
+  };
+
+  
+
+  function login(){
+    let username = document.getElementById("username").value
+    let password = document.getElementById("pwd").value
+    let msg = ""
+
+    if(username === "" || password === ""){
+      msg = `<span style="color: red; font-size: 13px;">请输入用户名或密码</span>`
+      document.querySelector(".msg").innerHTML = msg
+    }else if(username !== "admin" || password !== "123"){
+      msg = `<span style="color: red; font-size: 13px;">用户名或密码错误</span>`
+      document.querySelector(".msg").innerHTML = msg
+    }else if (!agreeCheck.checked) {
+      msg = `<span style="color: red; font-size: 13px;">请勾选小米音乐使用协议</span>`;
+      document.querySelector(".msg").innerHTML = msg
+    }else{
+      msg = `<span style="color: green; font-size: 13px;">登录成功</span>`
+      document.querySelector(".msg").innerHTML = msg
+      setTimeout(function () {
+                window.location.href = "https://www.baidu.com/";
+            }, 1000);
+      
+    }
+
+  }
+
+</script>
+
+</html>

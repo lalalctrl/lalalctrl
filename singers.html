@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歌手</title>
+</head>
+<style>
+    /* 全局初始化 */
+* {
+    margin: 0;
+    padding: 0;
+    /* 统一盒子模型：宽高包含边框、内边距 */
+    box-sizing: border-box;
+}
+
+/* 取消列表默认圆点 */
+ul, ol {
+    list-style: none;
+}
+
+/* 取消超链接下划线、统一颜色 */
+a {
+    text-decoration: none;
+    color: #333;
+}
+
+/* 图片默认自适应、取消底部小白边 */
+img {
+    display: block;
+    border: none;
+}
+
+/* 统一全局字体、行高、字体颜色 */
+body {
+    font-family: "Microsoft Yahei", sans-serif;
+    color: #333;
+    line-height: 1.5;
+    background-color: #fff;
+}
+
+/* 清除浮动（防止父元素高度塌陷） */
+.clearfix::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.header{
+    width: 100%;
+    height: 90px;
+    background-color: #8fa98e;
+    display: flex;
+    justify-content: center;
+    
+}
+.header div{
+    margin-top: 18px;
+    margin-right: 20px;
+}
+.header_icon img{
+    width: 50px;
+   
+}
+.header_icon_text{
+    color: #fff;
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: -5px;
+    
+}
+.header_search input{
+    
+    margin-top: 10px;
+    height: 30px;
+    width: 270px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    background: url(./images/1.webp) no-repeat 10px center;
+    background-size: 16px;
+    background-color: #b2aeae91;
+    padding-left: 30px;
+}
+.header_li ul{
+    display: flex;
+    margin-left: 200px;
+    
+    
+}
+.header_li ul li{
+    margin-top: 13px;
+    margin-left: 20px;
+    
+    
+}
+.header_li ul li.active a{
+    background-color: #6b8e6a;
+    padding: 6px 12px;
+    border-radius: 20px;
+    color: white !important;
+    font-weight: bold;
+}
+.header_li ul li button{
+    width: 85px;
+    height: 35px;
+    background-color: aliceblue;
+    border: none;
+    border-radius: 20px;
+    margin-top: -5px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #6b8e6a;
+    
+   
+    
+    
+}
+
+.banner {
+  width: 100%;
+  height: 500px; /* 固定高度，和之前的设计匹配 */
+  /* 关键：背景图自适应 */
+  background: url("./images/seventeen.png") center/cover no-repeat;
+  overflow: hidden; /* 超出部分裁剪掉，不会溢出 */
+  margin-bottom: 50px;
+}
+
+.banner-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+}
+/* 每一行筛选栏 */
+.filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 关键：所有行的内容都从同一位置开始 */
+  gap: 10px;
+  margin: 20px 0 12px;
+  /* max-width + margin: auto */
+  max-width: 900px; /* 控制内容总宽度，左右自动留白 */
+  margin-left: auto;
+  margin-right: auto;
+  
+}
+
+/* 单个筛选选项 */
+.filter-item {
+  padding: 3px 8px;
+  font-size: 14px;
+  border-radius: 2px;
+  color: #333;
+  cursor: pointer;
+  /* 禁止文字换行，强制一行显示 */
+  white-space: nowrap;
+  /* 不要加固定宽度，让它自适应文字宽度 */
+}
+
+/* 选中状态（绿色背景+白色文字） */
+.filter-item.active {
+  background-color: #27ae60; /* 绿色，和图里一致 */
+  color: #fff;
+}
+
+/* 鼠标 hover 效果，增强交互感 */
+.filter-item:hover:not(.active) {
+  background-color: #f0f0f0;
+}
+/* 1. 歌手列表容器 */
+.singer-container {
+  /* 核心：固定宽度，让一行刚好放下5个 */
+  width: 900px;          
+  margin: 40px auto;     /* 居中 + 上下留白 */
+  display: flex;
+  justify-content: left;
+  flex-wrap: wrap;       /* 自动换行 */
+  gap: 60px;             /* 头像之间间距 */
+}
+
+/* 2. 单个歌手项（头像+名字整体） */
+.singer-item {
+  display: flex;
+  flex-direction: column; /* 头像在上，名字在下 */
+  align-items: center; /* 水平居中 */
+  gap: 10px; /* 头像和名字之间的间距 */
+  cursor: pointer;
+}
+
+/* 3. 圆形头像 */
+.singer-item img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%; /* 变成圆形 */
+  object-fit: cover; /* 防止图片拉伸变形 */
+  transition: transform 0.2s; /* hover动画 */
+}
+.singer-item:hover img {
+  transform: scale(1.08);
+}
+
+/* 名字列表容器，和头像列表宽度、间距完全统一 */
+.name-container {
+  max-width: 900px; /* 和 .singer-container 宽度一致 */
+  margin: 30px auto; /* 上下边距和头像列表匹配 */
+  display: flex;
+  justify-content: flex-start; /* 和头像列表左对齐 */
+  gap: 60px; /* 和头像之间的间距保持一致 */
+  margin-top: 50px;
+}
+
+/* 每一列，和头像的宽度对齐 */
+.name-column {
+  width: 120px; /* 和头像宽度 120px 一致 */
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* 上下名字之间的间距 */
+}
+
+/* 单个名字，居中显示，不溢出 */
+.name-item {
+  font-size: 14px;
+  color: #333;
+  text-align: center; /* 和头像下方的名字居中对齐 */
+  white-space: nowrap; /* 名字不换行 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 长名字自动省略号 */
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 40px 0;
+}
+
+.page-btn {
+  padding: 8px 16px;
+  border: 1px solid #eee;
+  background: #f5f5f5;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.page-num {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.page-num.active {
+  background-color: #27ae60;
+  color: #fff;
+}
+.main{
+    height: 1500px;
+}
+
+/* 页脚样式 */
+.footer {
+  width: 100%;
+  background-color: #2d3436; /* 深色背景，和绿色形成对比 */
+  color: #b0b0b0;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* 顶部图标区 */
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+.link-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.link-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #6b8e6a; /* 和导航栏高亮色一致 */
+  border-radius: 8px;
+  opacity: 0.7;
+}
+.link-item span {
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* 文字链接区 */
+.footer-info .info-links {
+  margin-bottom: 15px;
+}
+.footer-info .info-links a {
+  color: #999;
+  font-size: 14px;
+  text-decoration: none;
+}
+.footer-info .info-links a:hover {
+  color: #6b8e6a; /* hover变绿色，和导航栏呼应 */
+}
+.footer-info .info-text {
+  font-size: 13px;
+  margin: 8px 0;
+  color: #888;
+}
+.footer-info .copyright {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #666;
+}
+
+</style>
+<body>
+    <div class="header">
+        <div class="header_icon">
+            <img src="./images/icon-xiaomi.png" alt="">
+            
+        </div>
+        <div class="header_icon_text">
+            <span>xiaomi音乐</span>
+        </div>
+        <div class="header_search">
+            <input type="text">
+        </div>
+        <div class="header_li">
+            <ul>
+                <li><a href="./index.html">首页</a></li>
+                <li><a href="./myMusic.html">我的音乐</a></li>
+                <li class="active"><a href="./singers.html">歌手</a></li>
+                <li><a href="./rank.html">排行榜</a></li>
+                <li><a href="./vip.html">VIP会员</a></li>
+                <li>|</li>
+                <li><button onclick="login()">登录</button></li>
+            </ul>
+        </div>
+    </div>
+    <div class="main">
+        <!-- 1. 顶部横幅（带背景图和文字） -->
+        <header class="banner">
+            <div class="banner-text">万千歌手 近在眼前</div>
+        </header>
+        
+            <!-- 字母筛选 -->
+            <div class="filter-row">
+                <span class="filter-item active">全部</span>
+                <span class="filter-item">A</span>
+                <span class="filter-item">B</span>
+                <span class="filter-item">C</span>
+                <span class="filter-item">D</span>
+                <span class="filter-item">E</span>
+                <span class="filter-item">F</span>
+                <span class="filter-item">G</span>
+                <span class="filter-item">H</span>
+                <span class="filter-item">I</span>
+                <span class="filter-item">J</span>
+                <span class="filter-item">K</span>
+                <span class="filter-item">L</span>
+                <span class="filter-item">M</span>
+                <span class="filter-item">N</span>
+                <span class="filter-item">O</span>
+                <span class="filter-item">P</span>
+                <span class="filter-item">Q</span>
+                <span class="filter-item">R</span>
+                <span class="filter-item">S</span>
+                <span class="filter-item">T</span>
+                <span class="filter-item">U</span>
+                <span class="filter-item">V</span>
+                <span class="filter-item">W</span>
+                <span class="filter-item">X</span>
+                <span class="filter-item">Y</span>
+                <span class="filter-item">Z</span>
+                <span class="filter-item">#</span>
+            </div>
+
+            <!-- 地区筛选 -->
+            <div class="filter-row">
+                <span class="filter-item active">全部</span>
+                <span class="filter-item">内地</span>
+                <span class="filter-item">欧美</span>
+                <span class="filter-item">港台</span>
+                <span class="filter-item">韩国</span>
+                <span class="filter-item">日本</span>
+                <span class="filter-item">其他</span>
+            </div>
+
+            <!-- 性别/组合筛选 -->
+            <div class="filter-row">
+                <span class="filter-item active">全部</span>
+                <span class="filter-item">男</span>
+                <span class="filter-item">女</span>
+                <span class="filter-item">组合</span>
+            </div>
+
+        
+
+        
+
+        <!-- 5. 歌手列表区域 -->
+        
+        <div class="singer-container">
+        <!-- 单个歌手项 -->
+            <div class="singer-item">
+                <img src="./images/zhoujielun.webp" alt="周杰伦">
+                <p class="singer-name">周杰伦</p>
+            </div>
+            <div class="singer-item">
+                <img src="./images/xuezhiqian.webp" alt="薛之谦">
+                <p class="singer-name">薛之谦</p>
+            </div>
+            <div class="singer-item">
+                <img src="./images/linjunjie.webp" alt="林俊杰">
+                <p class="singer-name">林俊杰</p>
+            </div>
+            <div class="singer-item">
+                <img src="./images/dengziqi.webp" alt="G.E.M.邓紫棋">
+                <p class="singer-name">G.E.M.邓紫棋</p>
+            </div>
+            <div class="singer-item">
+                <img src="./images/newzhoushen.jpg" alt="周深">
+                <p class="singer-name">周深</p>
+            </div>
+            <div class="singer-item">
+                <img src="./images/zhangjiesinger.webp" alt="张杰">
+                <p class="singer-name">张杰</p>
+            </div>
+            <div class="singer-item">
+                <img src="./images/newxusong.jpg" alt="许嵩">
+                <p class="singer-name">许嵩</p>
+            </div>
+            <div class="singer-item">
+                <img src="./images/newchenyixun.webp" alt="陈奕迅">
+                <p class="singer-name">陈奕迅</p>
+            </div>
+            <div class="singer-item">
+                <img src="./images/newlrh.webp" alt="李荣浩">
+                <p class="singer-name">李荣浩</p>
+            </div>
+            <div class="singer-item">
+                <img src="./images/fenghuangchuanqi.webp" alt="凤凰传奇">
+                <p class="singer-name">凤凰传奇</p>
+            </div>
+        
+        </div>
+
+        <!-- 歌手名字列表 -->
+        <div class="name-container">
+            <div class="name-column">
+                <div class="name-item">蔡健雅</div>
+                <div class="name-item">张韶涵</div>
+                <div class="name-item">Alan Walker</div>
+                <div class="name-item">陈雪凝</div>
+                <div class="name-item">邓紫棋</div>
+            </div>
+
+            <div class="name-column">
+                <div class="name-item">张杰</div>
+                <div class="name-item">张宇</div>
+                <div class="name-item">汪苏泷</div>
+                <div class="name-item">BEYOND</div>
+                <div class="name-item">永彬</div>
+            </div>
+
+            <div class="name-column">
+                <div class="name-item">周杰伦</div>
+                <div class="name-item">李荣浩</div>
+                <div class="name-item">许嵩</div>
+                <div class="name-item">陈奕迅</div>
+                <div class="name-item">毛不易</div>
+            </div>
+
+            <div class="name-column">
+                <div class="name-item">林俊杰</div>
+                <div class="name-item">田馥甄</div>
+                <div class="name-item">蔡依林</div>
+                <div class="name-item">孙燕姿</div>
+                <div class="name-item">杨宗纬</div>
+            </div>
+
+            <div class="name-column">
+                <div class="name-item">五月天</div>
+                <div class="name-item">周深</div>
+                <div class="name-item">于文文</div>
+                <div class="name-item">任贤齐</div>
+                <div class="name-item">刘德华</div>
+            </div>
+        </div>
+
+        <!-- 分页器 -->
+        <div class="pagination">
+            <button class="page-btn">上一页</button>
+            <span class="page-num active">1</span>
+            <span class="page-num">2</span>
+            <span class="page-num">3</span>
+            <span class="page-num">4</span>
+            <span class="page-num">5</span>
+            <span class="page-num">6</span>
+            <span class="page-num">7</span>
+            <span class="page-num">8</span>
+            <span class="page-num">9</span>
+            <span class="page-num">10</span>
+            <span class="page-ellipsis">...</span>
+            <button class="page-btn">下一页</button>
+        </div>
+    </div>
+
+    <div style="height: 100px;"></div>
+    <footer class="footer">
+  <!-- 底部合作伙伴图标区 -->
+        <div class="footer-links">
+            <div class="link-item">
+                <i class="icon">🎵</i>
+                <span>小米音乐集团</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">🎤</i>
+                <span>小米音乐人</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">✍️</i>
+                <span>音乐创作平台</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">🎧</i>
+                <span>听歌识曲</span>
+            </div>
+            <div class="link-item">
+                <i class="icon">⭐</i>
+                <span>原创音乐</span>
+            </div>
+        </div>
+
+        <!-- 中间文字链接区 -->
+        <div class="footer-info">
+            <p class="info-links">
+            <a href="#">关于我们</a> |
+            <a href="#">商务合作</a> |
+            <a href="#">广告服务</a> |
+            <a href="#">投诉指引</a> |
+            <a href="#">隐私政策</a> |
+            <a href="#">用户服务协议</a> |
+            <a href="#">招聘信息</a> |
+            <a href="#">客服中心</a>
+            </p>
+            <p class="info-text">
+            粤网文(2025)1226-111号 | 网络视听许可证 1910564号 | 增值电信业务 粤B2-20060339 | 粤ICP备09017694号
+            </p>
+            <p class="info-text">
+            粤公网安备 44030002000001号 | 互联网不良信息举报邮箱：music@xiaomi.com | 客服电话：400-123-4567
+            </p>
+            <p class="copyright">
+            Copyright © 2024-2026 Xiaomi Music. All Rights Reserved.
+            </p>
+        </div>
+    </footer>
+    
+  
+</body>
+<script>
+        // 获取所有筛选行
+    const filterRows = document.querySelectorAll('.filter-row');
+
+    // 给每一行绑定点击事件
+    filterRows.forEach(row => {
+    const items = row.querySelectorAll('.filter-item');
+    items.forEach(item => {
+        item.addEventListener('click', function() {
+        // 移除同组所有选项的 active 类
+        items.forEach(i => i.classList.remove('active'));
+        // 给当前点击的选项加上 active 类
+        this.classList.add('active');
+        });
+    });
+    });
+        
+
+    // 获取所有导航选项
+    const pageItems = document.querySelectorAll('.pagination .page-num');
+
+    // 给每个选项绑定点击事件
+    pageItems.forEach(item => {
+    item.addEventListener('click', function() {
+        // 1. 先把所有选项的 active 类去掉
+        pageItems.forEach(i => i.classList.remove('active'));
+        // 2. 给当前点击的选项加上 active 类
+        this.classList.add('active');
+    });
+    });
+
+    // ========== 登录 ==========
+    function login(){
+        window.location.href = "./login.html"
+    }
+</script>
+</html>
